@@ -205,6 +205,25 @@ func TestEvaluator(t *testing.T) {
 				},
 			},
 		},
+		{
+			`{ "var": "a", "op": "!=", "val": 1 }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": 2,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": 1,
+					},
+					false,
+					false,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
