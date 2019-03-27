@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 )
@@ -14,7 +15,7 @@ type ExprExpr struct {
 }
 
 func (e *ExprExpr) String() string {
-	return e.String()
+	return fmt.Sprintf("(%s)", e.Expr.String())
 }
 
 type BinaryExpr struct {
@@ -57,4 +58,46 @@ type BoolLiteral struct {
 
 func (l *BoolLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
+}
+
+type WalkFunc func(expr Expr, err error) error
+
+func Walk(expr Expr, fn WalkFunc) error {
+	if expr == nil {
+		return fn(nil, errors.New("expression must not be nil"))
+	}
+
+	return walk(expr, fn)
+}
+
+func walk(expr Expr, fn WalkFunc) error {
+	if expr == nil {
+		return nil
+	}
+
+	err := fn(expr, nil)
+	if err != nil {
+		return err
+	}
+
+	switch e := expr.(type) {
+	case *BinaryExpr:
+		err = walk(e.LHS, fn)
+		if err != nil {
+			return err
+		}
+
+		err = walk(e.RHS, fn)
+		if err != nil {
+			return err
+		}
+
+	case *ExprExpr:
+		err = walk(e.Expr, fn)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
