@@ -6,24 +6,11 @@ import (
 	"reflect"
 )
 
-type CompType string
-
-const (
-	OrCond  CompType = "or"
-	AndCond CompType = "and"
-)
-
-type OpType string
-
-const (
-	Eq OpType = "eq"
-)
-
 type Rule struct {
-	Comparator CompType    `json:"comparator,omitempty"`
+	Comparator Op          `json:"comparator,omitempty"`
 	Rules      []Rule      `json:"rules,omitempty"`
 	Var        string      `json:"var,omitempty"`
-	Op         OpType      `json:"op,omitempty"`
+	Op         Op          `json:"op,omitempty"`
 	Val        interface{} `json:"val,omitempty"`
 }
 
@@ -83,14 +70,6 @@ func parseExpr(rule *Rule) (Expr, error) {
 	}
 
 	if len(rule.Rules) > 0 {
-		var op Op
-		switch rule.Comparator {
-		case OrCond:
-			op = OR
-		case AndCond:
-			op = AND
-		}
-
 		var res Expr
 		for _, r := range rule.Rules {
 			e, err := parseExpr(&r)
@@ -102,69 +81,64 @@ func parseExpr(rule *Rule) (Expr, error) {
 				res = e
 			} else {
 				res = &BinaryExpr{
-					Op:  op,
+					Op:  rule.Comparator,
 					LHS: res,
 					RHS: e,
 				}
 			}
 		}
 
-		return &ExprExpr{
-			Expr: res,
-		}, nil
+		return &ExprExpr{Expr: res}, nil
 	}
 
-	switch rule.Op {
-	case Eq:
-		typeof := reflect.TypeOf(rule.Val)
-		if typeof == nil {
-			return nil, errors.New("invlaid type")
-		}
+	typeof := reflect.TypeOf(rule.Val)
+	if typeof == nil {
+		return nil, errors.New("invalid type")
+	}
 
-		switch typeof.Kind() {
-		case reflect.Int:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &NumberLiteral{Val: float64(rule.Val.(int))},
-			}, nil
-		case reflect.Int32:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &NumberLiteral{Val: float64(rule.Val.(int32))},
-			}, nil
-		case reflect.Int64:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &NumberLiteral{Val: float64(rule.Val.(int64))},
-			}, nil
-		case reflect.Float32:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &NumberLiteral{Val: float64(rule.Val.(float32))},
-			}, nil
-		case reflect.Float64:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &NumberLiteral{Val: float64(rule.Val.(float64))},
-			}, nil
-		case reflect.String:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &StringLiteral{Val: rule.Val.(string)},
-			}, nil
-		case reflect.Bool:
-			return &BinaryExpr{
-				Op:  EQ,
-				LHS: &Var{rule.Var},
-				RHS: &BoolLiteral{Val: rule.Val.(bool)},
-			}, nil
-		}
+	switch typeof.Kind() {
+	case reflect.Int:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &NumberLiteral{Val: float64(rule.Val.(int))},
+		}, nil
+	case reflect.Int32:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &NumberLiteral{Val: float64(rule.Val.(int32))},
+		}, nil
+	case reflect.Int64:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &NumberLiteral{Val: float64(rule.Val.(int64))},
+		}, nil
+	case reflect.Float32:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &NumberLiteral{Val: float64(rule.Val.(float32))},
+		}, nil
+	case reflect.Float64:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &NumberLiteral{Val: float64(rule.Val.(float64))},
+		}, nil
+	case reflect.String:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &StringLiteral{Val: rule.Val.(string)},
+		}, nil
+	case reflect.Bool:
+		return &BinaryExpr{
+			Op:  rule.Op,
+			LHS: &Var{rule.Var},
+			RHS: &BoolLiteral{Val: rule.Val.(bool)},
+		}, nil
 	}
 
 	return nil, errors.New("unexpected error")
