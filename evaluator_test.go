@@ -107,6 +107,38 @@ func TestEvaluator(t *testing.T) {
 				},
 			},
 		},
+		{
+			`{ "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": "2" }, { "var": "c", "op": "eq", "val": 3 } ] }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": 1,
+						"b": "2",
+						"c": 3,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": 1,
+						"b": "",
+						"c": 3,
+					},
+					false,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": 1,
+						"b": 2,
+						"c": 3,
+					},
+					false,
+					true,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
