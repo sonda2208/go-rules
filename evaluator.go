@@ -31,7 +31,7 @@ func evaluate(expr Expr, params map[string]interface{}) (Expr, error) {
 
 	switch e := expr.(type) {
 	case *ExprExpr:
-		return evaluate(e, params)
+		return evaluate(e.Expr, params)
 	case *BinaryExpr:
 		l, err := evaluate(e.LHS, params)
 		if err != nil {
@@ -74,7 +74,7 @@ func evaluate(expr Expr, params map[string]interface{}) (Expr, error) {
 		}
 	}
 
-	return nil, errors.New("unsupported expression")
+	return expr, nil
 }
 
 func compute(op Op, lhs, rhs Expr) (*BoolLiteral, error) {
