@@ -121,17 +121,23 @@ func computeEq(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
+
+		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
+
+		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	case *BoolLiteral:
 		r, ok := rhs.(*BoolLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
+
+		return nil, fmt.Errorf(`cannot convert "%s" to bool`, rhs.String())
 	}
 
-	return nil, errors.New("unsupported expression")
+	return nil, errors.New("invalid data type")
 }
