@@ -15,27 +15,27 @@ func TestParser(t *testing.T) {
 		isError bool
 	}{
 		{
-			`{ "comparator": "and", "rules": [ { "comparator": "or", "rules": [ { "var": "a", "op": "eq", "val": "xavier" }, { "var": "b", "op": "eq", "val": 1 } ] }, { "var": "c", "op": "eq", "val": true } ] }`,
+			`{ "comparator": "&&", "rules": [ { "comparator": "||", "rules": [ { "var": "a", "op": "==", "val": "xavier" }, { "var": "b", "op": "==", "val": 1 } ] }, { "var": "c", "op": "==", "val": true } ] }`,
 			false,
 		},
 		{
-			`{ "comparator": "or", "rules": [ { "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": 2 } ] }, { "comparator": "and", "rules": [ { "var": "c", "op": "eq", "val": 3 }, { "var": "d", "op": "eq", "val": 4 } ] } ] }`,
+			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ] }`,
 			false,
 		},
 		{
-			`{ "comparator": "or", "rules": [ { "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": 2 } ] }, { "comparator": "and", "rules": [ { "var": "c", "op": "eq", "val": 3 }, { "var": "d", "op": "eq", "val": 4 } ] } ], "var": "a", }`,
+			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "var": "a", }`,
 			true,
 		},
 		{
-			`{ "comparator": "or", "rules": [ { "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": 2 } ] }, { "comparator": "and", "rules": [ { "var": "c", "op": "eq", "val": 3 }, { "var": "d", "op": "eq", "val": 4 } ] } ], "op": "?" }`,
+			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "op": "?" }`,
 			true,
 		},
 		{
-			`{ "comparator": "or", "rules": [ { "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": 2 } ] }, { "comparator": "and", "rules": [ { "var": "c", "op": "eq", "val": 3 }, { "var": "d", "op": "eq", "val": 4 } ] } ], "val": 1 }`,
+			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "val": 1 }`,
 			true,
 		},
 		{
-			`{ "comparator": "or", "rules": [ { "comparator": "and", "rules": [ { "var": "a", "op": "eq", "val": 1 }, { "var": "b", "op": "eq", "val": 2 } ] }, { "comparator": "and", "rules": [ { "var": "c", "op": "eq", "val": 3 }, { "var": "d", "op": "eq", "val": 4 } ] } ], "var": "a", "op": "eq", "val": 1 }`,
+			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "var": "a", "op": "==", "val": 1 }`,
 			true,
 		},
 	}
