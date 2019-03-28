@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"time"
 )
 
 type Expr interface {
@@ -58,6 +59,14 @@ type BoolLiteral struct {
 }
 
 func (l *BoolLiteral) String() string {
+	return fmt.Sprintf("%v", l.Val)
+}
+
+type TimeLiteral struct {
+	Val time.Time
+}
+
+func (l *TimeLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
@@ -140,6 +149,11 @@ func toLiteral(i interface{}) (Expr, error) {
 		return &StringLiteral{Val: i.(string)}, nil
 	case reflect.Bool:
 		return &BoolLiteral{Val: i.(bool)}, nil
+	case reflect.Struct:
+		switch i.(type) {
+		case time.Time:
+			return &TimeLiteral{i.(time.Time)}, nil
+		}
 	case reflect.Slice:
 		switch i.(type) {
 		case []string:
