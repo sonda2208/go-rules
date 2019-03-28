@@ -7,25 +7,25 @@ Simple rules engine
 ```go
 // (a < '2014-01-01 23:59:59' && b in ("1", "2", "3")) || (c != "string" && d >= 4)
 r := []byte(`
-	{
-		"comparator": "||",
-		"rules": [
-		  {
-			"comparator": "&&",
-			"rules": [
-			  { "var": "a", "op": "<", "val": "2019-03-28T11:39:43+07:00" },
-			  { "var": "b", "op": "in", "val": ["1", "2", "3"] }
-			]
-		  },
-		  {
-			"comparator": "&&",
-			"rules": [
-			  { "var": "c", "op": "!=", "val": "string" },
-			  { "var": "d", "op": ">=", "val": 4 }
-			]
-		  }
-		]
-	}
+{
+    "comparator": "||",
+    "rules": [
+        {
+        "comparator": "&&",
+        "rules": [
+            { "var": "a", "op": "<", "val": "2019-03-28T11:39:43+07:00" },
+            { "var": "b", "op": "in", "val": [1, 2, 3] }
+        ]
+        },
+        {
+        "comparator": "&&",
+        "rules": [
+            { "var": "c", "op": "!=", "val": "string" },
+            { "var": "d", "op": ">=", "val": 4 }
+        ]
+        }
+    ]
+}
 `)
 
 // parse from JSON
@@ -37,8 +37,8 @@ if err != nil {
 params := map[string]interface{}{
     "a": time.Now(),
     "b": 1,
-    "c": "string",
-    "d": 3,
+    "c": "number",
+    "d": 5,
 }
 
 // passing data to evaluate expression

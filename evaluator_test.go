@@ -365,3 +365,41 @@ func TestEvaluator(t *testing.T) {
 		}
 	}
 }
+
+func TestExample(t *testing.T) {
+	expression := `
+	{
+		"comparator": "||",
+		"rules": [
+		  {
+			"comparator": "&&",
+			"rules": [
+			  { "var": "a", "op": "<", "val": "2019-03-28T11:39:43+07:00" },
+			  { "var": "b", "op": "in", "val": [1, 2, 3] }
+			]
+		  },
+		  {
+			"comparator": "&&",
+			"rules": [
+			  { "var": "c", "op": "!=", "val": "string" },
+			  { "var": "d", "op": ">=", "val": 4 }
+			]
+		  }
+		]
+	}
+	`
+
+	parameters := map[string]interface{}{
+		"a": time.Now(),
+		"b": 1,
+		"c": "number",
+		"d": 5,
+	}
+
+	expr, err := rules.ParseFromJSON([]byte(expression))
+	require.NoError(t, err)
+
+	res, err := rules.Evaluate(expr, parameters)
+	require.NoError(t, err)
+	assert.True(t, res)
+}
