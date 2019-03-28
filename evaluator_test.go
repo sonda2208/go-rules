@@ -2,6 +2,7 @@ package rules_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,6 +22,9 @@ type TestCase struct {
 }
 
 func TestEvaluator(t *testing.T) {
+	dt, err := time.Parse(time.RFC3339, "2019-03-28T11:39:43+07:00")
+	require.NoError(t, err)
+
 	tests := []TestCase{
 		{
 			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ] }`,
@@ -258,6 +262,82 @@ func TestEvaluator(t *testing.T) {
 						"a": "",
 					},
 					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "==", "val": "2019-03-28T11:39:43+07:00" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": time.Now(),
+					},
+					false,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dt,
+					},
+					true,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "!=", "val": "2019-03-28T11:39:43+07:00" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": time.Now(),
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dt,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": ">", "val": "2019-03-28T11:39:43+07:00" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": time.Now(),
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dt,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "<", "val": "2019-03-28T11:39:43+07:00" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": time.Now(),
+					},
+					false,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dt.Add(-1 * time.Hour),
+					},
+					true,
 					false,
 				},
 			},
