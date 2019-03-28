@@ -74,6 +74,8 @@ func compute(op Op, lhs, rhs Expr) (*BoolLiteral, error) {
 		return computeGT(lhs, rhs)
 	case GTE:
 		return computeGTE(lhs, rhs)
+	case IN:
+		return computeIN(lhs, rhs)
 	}
 
 	return nil, errors.New("invalid operator")
@@ -88,7 +90,7 @@ func computeOR(lhs, rhs Expr) (*BoolLiteral, error) {
 		}
 	}
 
-	return nil, errors.New("unsupported expression")
+	return &BoolLiteral{Val: true}, nil
 }
 
 func computeAND(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -100,7 +102,7 @@ func computeAND(lhs, rhs Expr) (*BoolLiteral, error) {
 		}
 	}
 
-	return nil, errors.New("unsupported expression")
+	return &BoolLiteral{Val: true}, nil
 }
 
 func computeEQ(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -110,25 +112,19 @@ func computeEQ(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	case *BoolLiteral:
 		r, ok := rhs.(*BoolLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val == r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to bool`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
 func computeNEQ(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -138,25 +134,19 @@ func computeNEQ(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val != r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val != r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	case *BoolLiteral:
 		r, ok := rhs.(*BoolLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val != r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to bool`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
 func computeLT(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -166,18 +156,14 @@ func computeLT(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val < r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val < r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
 func computeLTE(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -187,18 +173,14 @@ func computeLTE(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val <= r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val <= r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
 func computeGT(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -208,18 +190,14 @@ func computeGT(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val > r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val > r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
 func computeGTE(lhs, rhs Expr) (*BoolLiteral, error) {
@@ -229,16 +207,45 @@ func computeGTE(lhs, rhs Expr) (*BoolLiteral, error) {
 		if ok {
 			return &BoolLiteral{Val: (l.Val >= r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to number`, rhs.String())
 	case *StringLiteral:
 		r, ok := rhs.(*StringLiteral)
 		if ok {
 			return &BoolLiteral{Val: (l.Val >= r.Val)}, nil
 		}
-
-		return nil, fmt.Errorf(`cannot convert "%s" to string`, rhs.String())
 	}
 
-	return nil, errors.New("invalid data type")
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeIN(lhs, rhs Expr) (*BoolLiteral, error) {
+	switch l := lhs.(type) {
+	case *NumberLiteral:
+		r, ok := rhs.(*NumberSliceLiteral)
+		if ok {
+			res := false
+			for _, v := range r.Val {
+				if l.Val == v {
+					res = true
+					break
+				}
+			}
+
+			return &BoolLiteral{Val: res}, nil
+		}
+	case *StringLiteral:
+		r, ok := rhs.(*StringSliceLiteral)
+		if ok {
+			res := false
+			for _, v := range r.Val {
+				if l.Val == v {
+					res = true
+					break
+				}
+			}
+
+			return &BoolLiteral{Val: res}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
