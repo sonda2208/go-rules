@@ -38,6 +38,22 @@ func TestParser(t *testing.T) {
 			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "var": "a", "op": "==", "val": 1 }`,
 			true,
 		},
+		{
+			`{ "var": "a", "op": "in", "val": [] }`,
+			true,
+		},
+		{
+			`{ "var": "a", "op": "in", "val": [1, 2, 3] }`,
+			false,
+		},
+		{
+			`{ "var": "a", "op": "in", "val": ["1", "2", "3"] }`,
+			false,
+		},
+		{
+			`{ "comparator": "&&", "rules": [ { "comparator": "||", "rules": [ { "var": "a", "op": "==", "val": "xavier" }, { "var": "b", "op": "==", "val": 1 } ] }, { "var": "c", "op": "in", "val": [2, 3, 4] } ] }`,
+			false,
+		},
 	}
 
 	for _, test := range tests {
