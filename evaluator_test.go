@@ -224,6 +224,44 @@ func TestEvaluator(t *testing.T) {
 				},
 			},
 		},
+		{
+			`{ "var": "a", "op": "in", "val": [1, 2, 3] }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": 1,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": 0,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "in", "val": ["1", "2", "3"] }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": "1",
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": "",
+					},
+					false,
+					false,
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -236,9 +274,12 @@ func TestEvaluator(t *testing.T) {
 			if e.isError {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err)
-				if !assert.Equal(t, e.expected, res) {
-					t.Log(expr.String())
+				if !assert.NoError(t, err) {
+					t.Logf("expr: %s\tparams: %v\n", test.rules, e.params)
+				} else {
+					if !assert.Equal(t, e.expected, res) {
+						t.Log(expr.String())
+					}
 				}
 			}
 		}

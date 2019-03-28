@@ -11,4 +11,5 @@ const (
 	LTE Op = "<="
 	GT  Op = ">"
 	GTE Op = ">="
+	IN  Op = "in"
 )

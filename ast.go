@@ -3,13 +3,13 @@ package rules
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strconv"
 	"time"
 )
 
 type Expr interface {
 	String() string
+	Type() string
 }
 
 type ExprExpr struct {
@@ -18,6 +18,10 @@ type ExprExpr struct {
 
 func (e *ExprExpr) String() string {
 	return fmt.Sprintf("(%s)", e.Expr.String())
+}
+
+func (e *ExprExpr) Type() string {
+	return "nested expression"
 }
 
 type BinaryExpr struct {
@@ -30,12 +34,20 @@ func (e *BinaryExpr) String() string {
 	return fmt.Sprintf("%s %s %s", e.LHS.String(), e.Op, e.RHS.String())
 }
 
+func (e *BinaryExpr) Type() string {
+	return "binary expression"
+}
+
 type Var struct {
 	Val string
 }
 
 func (v *Var) String() string {
 	return v.Val
+}
+
+func (v *Var) Type() string {
+	return "variable"
 }
 
 type NumberLiteral struct {
@@ -46,12 +58,20 @@ func (l *NumberLiteral) String() string {
 	return strconv.FormatFloat(l.Val, 'f', 3, 64)
 }
 
+func (l *NumberLiteral) Type() string {
+	return "number"
+}
+
 type StringLiteral struct {
 	Val string
 }
 
 func (l *StringLiteral) String() string {
 	return l.Val
+}
+
+func (l *StringLiteral) Type() string {
+	return "string"
 }
 
 type BoolLiteral struct {
@@ -62,12 +82,20 @@ func (l *BoolLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
+func (l *BoolLiteral) Type() string {
+	return "bool"
+}
+
 type TimeLiteral struct {
 	Val time.Time
 }
 
 func (l *TimeLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
+}
+
+func (l *TimeLiteral) Type() string {
+	return "time"
 }
 
 type NumberSliceLiteral struct {
@@ -78,12 +106,20 @@ func (l *NumberSliceLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
+func (l *NumberSliceLiteral) Type() string {
+	return "number slice"
+}
+
 type StringSliceLiteral struct {
 	Val []string
 }
 
 func (l *StringSliceLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
+}
+
+func (l *StringSliceLiteral) Type() string {
+	return "string slice"
 }
 
 type WalkFunc func(expr Expr, err error) error
@@ -117,7 +153,6 @@ func walk(expr Expr, fn WalkFunc) error {
 		if err != nil {
 			return err
 		}
-
 	case *ExprExpr:
 		err = walk(e.Expr, fn)
 		if err != nil {
@@ -126,80 +161,4 @@ func walk(expr Expr, fn WalkFunc) error {
 	}
 
 	return nil
-}
-
-func toLiteral(i interface{}) (Expr, error) {
-	varType := reflect.TypeOf(i)
-	if varType == nil {
-		return nil, errors.New("type not supported")
-	}
-
-	switch varType.Kind() {
-	case reflect.Int:
-		return &NumberLiteral{Val: float64(i.(int))}, nil
-	case reflect.Int32:
-		return &NumberLiteral{Val: float64(i.(int32))}, nil
-	case reflect.Int64:
-		return &NumberLiteral{Val: float64(i.(int64))}, nil
-	case reflect.Float32:
-		return &NumberLiteral{Val: float64(i.(float32))}, nil
-	case reflect.Float64:
-		return &NumberLiteral{Val: float64(i.(float64))}, nil
-	case reflect.String:
-		return &StringLiteral{Val: i.(string)}, nil
-	case reflect.Bool:
-		return &BoolLiteral{Val: i.(bool)}, nil
-	case reflect.Struct:
-		switch i.(type) {
-		case time.Time:
-			return &TimeLiteral{i.(time.Time)}, nil
-		}
-	case reflect.Slice:
-		switch i.(type) {
-		case []string:
-			l := &StringSliceLiteral{}
-			for _, v := range i.([]string) {
-				l.Val = append(l.Val, v)
-			}
-
-			return l, nil
-		case []int:
-			l := &NumberSliceLiteral{}
-			for _, v := range i.([]int) {
-				l.Val = append(l.Val, float64(v))
-			}
-
-			return l, nil
-		case []int32:
-			l := &NumberSliceLiteral{}
-			for _, v := range i.([]int32) {
-				l.Val = append(l.Val, float64(v))
-			}
-
-			return l, nil
-		case []int64:
-			l := &NumberSliceLiteral{}
-			for _, v := range i.([]int64) {
-				l.Val = append(l.Val, float64(v))
-			}
-
-			return l, nil
-		case []float32:
-			l := &NumberSliceLiteral{}
-			for _, v := range i.([]float32) {
-				l.Val = append(l.Val, float64(v))
-			}
-
-			return l, nil
-		case []float64:
-			l := &NumberSliceLiteral{}
-			for _, v := range i.([]float64) {
-				l.Val = append(l.Val, v)
-			}
-
-			return l, nil
-		}
-	}
-
-	return nil, nil
 }
