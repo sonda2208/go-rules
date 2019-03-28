@@ -3,7 +3,6 @@ package rules
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
 )
 
 type Rule struct {
@@ -91,55 +90,14 @@ func parseExpr(rule *Rule) (Expr, error) {
 		return &ExprExpr{Expr: res}, nil
 	}
 
-	typeof := reflect.TypeOf(rule.Val)
-	if typeof == nil {
-		return nil, errors.New("invalid type")
+	l, err := toLiteral(rule.Val)
+	if err != nil {
+		return nil, err
 	}
 
-	switch typeof.Kind() {
-	case reflect.Int:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &NumberLiteral{Val: float64(rule.Val.(int))},
-		}, nil
-	case reflect.Int32:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &NumberLiteral{Val: float64(rule.Val.(int32))},
-		}, nil
-	case reflect.Int64:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &NumberLiteral{Val: float64(rule.Val.(int64))},
-		}, nil
-	case reflect.Float32:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &NumberLiteral{Val: float64(rule.Val.(float32))},
-		}, nil
-	case reflect.Float64:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &NumberLiteral{Val: float64(rule.Val.(float64))},
-		}, nil
-	case reflect.String:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &StringLiteral{Val: rule.Val.(string)},
-		}, nil
-	case reflect.Bool:
-		return &BinaryExpr{
-			Op:  rule.Op,
-			LHS: &Var{rule.Var},
-			RHS: &BoolLiteral{Val: rule.Val.(bool)},
-		}, nil
-	}
-
-	return nil, errors.New("unexpected error")
+	return &BinaryExpr{
+		Op:  rule.Op,
+		LHS: &Var{rule.Var},
+		RHS: l,
+	}, nil
 }

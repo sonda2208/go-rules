@@ -3,7 +3,6 @@ package rules
 import (
 	"errors"
 	"fmt"
-	"reflect"
 )
 
 func Evaluate(expr Expr, params map[string]interface{}) (bool, error) {
@@ -51,27 +50,7 @@ func evaluate(expr Expr, params map[string]interface{}) (Expr, error) {
 			return nil, fmt.Errorf("param %s not found", varName)
 		}
 
-		varType := reflect.TypeOf(params[varName])
-		if varType == nil {
-			return nil, errors.New("type not supported")
-		}
-
-		switch varType.Kind() {
-		case reflect.Int:
-			return &NumberLiteral{Val: float64(varVal.(int))}, nil
-		case reflect.Int32:
-			return &NumberLiteral{Val: float64(varVal.(int32))}, nil
-		case reflect.Int64:
-			return &NumberLiteral{Val: float64(varVal.(int64))}, nil
-		case reflect.Float32:
-			return &NumberLiteral{Val: float64(varVal.(float32))}, nil
-		case reflect.Float64:
-			return &NumberLiteral{Val: float64(varVal.(float64))}, nil
-		case reflect.String:
-			return &StringLiteral{Val: varVal.(string)}, nil
-		case reflect.Bool:
-			return &BoolLiteral{Val: varVal.(bool)}, nil
-		}
+		return toLiteral(varVal)
 	}
 
 	return expr, nil
