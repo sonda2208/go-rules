@@ -12,15 +12,15 @@ type Expr interface {
 	Type() string
 }
 
-type ExprExpr struct {
+type ParentExpr struct {
 	Expr Expr
 }
 
-func (e *ExprExpr) String() string {
+func (e *ParentExpr) String() string {
 	return fmt.Sprintf("(%s)", e.Expr.String())
 }
 
-func (e *ExprExpr) Type() string {
+func (e *ParentExpr) Type() string {
 	return "nested expression"
 }
 
@@ -38,15 +38,15 @@ func (e *BinaryExpr) Type() string {
 	return "binary expression"
 }
 
-type Var struct {
+type Ident struct {
 	Val string
 }
 
-func (v *Var) String() string {
+func (v *Ident) String() string {
 	return v.Val
 }
 
-func (v *Var) Type() string {
+func (v *Ident) Type() string {
 	return "variable"
 }
 
@@ -153,7 +153,7 @@ func walk(expr Expr, fn WalkFunc) error {
 		if err != nil {
 			return err
 		}
-	case *ExprExpr:
+	case *ParentExpr:
 		err = walk(e.Expr, fn)
 		if err != nil {
 			return err
