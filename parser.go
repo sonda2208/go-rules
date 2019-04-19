@@ -89,7 +89,7 @@ func parseExpr(rule *Rule) (Expr, error) {
 			}
 		}
 
-		return &ExprExpr{Expr: res}, nil
+		return &ParentExpr{Expr: res}, nil
 	}
 
 	l, err := toLiteral(rule.Val)
@@ -99,7 +99,7 @@ func parseExpr(rule *Rule) (Expr, error) {
 
 	return &BinaryExpr{
 		Op:  rule.Op,
-		LHS: &Var{rule.Var},
+		LHS: &Ident{rule.Var},
 		RHS: l,
 	}, nil
 }

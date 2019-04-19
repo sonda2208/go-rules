@@ -30,7 +30,7 @@ func evaluate(expr Expr, params map[string]interface{}) (Expr, error) {
 	}
 
 	switch e := expr.(type) {
-	case *ExprExpr:
+	case *ParentExpr:
 		return evaluate(e.Expr, params)
 	case *BinaryExpr:
 		l, err := evaluate(e.LHS, params)
@@ -44,7 +44,7 @@ func evaluate(expr Expr, params map[string]interface{}) (Expr, error) {
 		}
 
 		return compute(e.Op, l, r)
-	case *Var:
+	case *Ident:
 		varName := e.Val
 		varVal, ok := params[varName]
 		if !ok {
