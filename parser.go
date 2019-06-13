@@ -116,6 +116,11 @@ func toLiteral(i interface{}) (Expr, error) {
 	case reflect.Int32:
 		return &NumberLiteral{Val: float64(i.(int32))}, nil
 	case reflect.Int64:
+		dur, isDuration := i.(time.Duration)
+		if isDuration {
+			return &DurationLiteral{Val: dur}, nil
+		}
+
 		return &NumberLiteral{Val: float64(i.(int64))}, nil
 	case reflect.Float32:
 		return &NumberLiteral{Val: float64(i.(float32))}, nil
