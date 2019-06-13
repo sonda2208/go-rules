@@ -138,6 +138,16 @@ func computeEQ(lhs, rhs Expr) (*BoolLiteral, error) {
 
 			return &BoolLiteral{Val: (l.Val == dt)}, nil
 		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val == v}, nil
+		}
 	}
 
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
@@ -175,6 +185,16 @@ func computeNEQ(lhs, rhs Expr) (*BoolLiteral, error) {
 
 			return &BoolLiteral{Val: (l.Val != dt)}, nil
 		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val != v}, nil
+		}
 	}
 
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
@@ -206,6 +226,16 @@ func computeLT(lhs, rhs Expr) (*BoolLiteral, error) {
 			}
 
 			return &BoolLiteral{Val: l.Val.Before(dt)}, nil
+		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val < v}, nil
 		}
 	}
 
@@ -239,6 +269,16 @@ func computeLTE(lhs, rhs Expr) (*BoolLiteral, error) {
 
 			return &BoolLiteral{Val: l.Val.Before(dt)}, nil
 		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val <= v}, nil
+		}
 	}
 
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
@@ -271,6 +311,16 @@ func computeGT(lhs, rhs Expr) (*BoolLiteral, error) {
 
 			return &BoolLiteral{Val: l.Val.After(dt)}, nil
 		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val > v}, nil
+		}
 	}
 
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
@@ -302,6 +352,16 @@ func computeGTE(lhs, rhs Expr) (*BoolLiteral, error) {
 			}
 
 			return &BoolLiteral{Val: l.Val.After(dt)}, nil
+		}
+	case *DurationLiteral:
+		rv, ok := rhs.(*StringLiteral)
+		if ok {
+			v, err := time.ParseDuration(rv.Val)
+			if err != nil {
+				return nil, err
+			}
+
+			return &BoolLiteral{Val: l.Val >= v}, nil
 		}
 	}
 
