@@ -122,6 +122,18 @@ func (l *StringSliceLiteral) Type() string {
 	return "string slice"
 }
 
+type DurationLiteral struct {
+	Val time.Duration
+}
+
+func (l *DurationLiteral) String() string {
+	return l.Val.String()
+}
+
+func (l *DurationLiteral) Type() string {
+	return "duration"
+}
+
 type WalkFunc func(expr Expr, err error) error
 
 func Walk(expr Expr, fn WalkFunc) error {

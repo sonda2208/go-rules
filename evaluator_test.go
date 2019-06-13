@@ -25,6 +25,15 @@ func TestEvaluator(t *testing.T) {
 	dt, err := time.Parse(time.RFC3339, "2019-03-28T11:39:43+07:00")
 	require.NoError(t, err)
 
+	dur2m, err := time.ParseDuration("2m")
+	require.NoError(t, err)
+
+	dur1m30s, err := time.ParseDuration("1m30s")
+	require.NoError(t, err)
+
+	dur45s, err := time.ParseDuration("45s")
+	require.NoError(t, err)
+
 	tests := []TestCase{
 		{
 			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ] }`,
@@ -338,6 +347,127 @@ func TestEvaluator(t *testing.T) {
 						"a": dt.Add(-1 * time.Hour),
 					},
 					true,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "==", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					false,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur1m30s,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": 1,
+					},
+					false,
+					true,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "!=", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur1m30s,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": ">", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur1m30s,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": ">=", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur1m30s,
+					},
+					true,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "<", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur45s,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					false,
+					false,
+				},
+			},
+		},
+		{
+			`{ "var": "a", "op": "<=", "val": "1m30s" }`,
+			[]Evaluation{
+				{
+					map[string]interface{}{
+						"a": dur1m30s,
+					},
+					true,
+					false,
+				},
+				{
+					map[string]interface{}{
+						"a": dur2m,
+					},
+					false,
 					false,
 				},
 			},
