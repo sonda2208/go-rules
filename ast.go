@@ -12,126 +12,173 @@ type Expr interface {
 	Type() string
 }
 
-type ParentExpr struct {
+type Literal interface {
+	Value() interface{}
+}
+
+type parentExpr struct {
 	Expr Expr
 }
 
-func (e *ParentExpr) String() string {
+func (e *parentExpr) String() string {
 	return fmt.Sprintf("(%s)", e.Expr.String())
 }
 
-func (e *ParentExpr) Type() string {
+func (e *parentExpr) Type() string {
 	return "nested expression"
 }
 
-type BinaryExpr struct {
+type binaryExpr struct {
 	Op  Op
 	LHS Expr
 	RHS Expr
 }
 
-func (e *BinaryExpr) String() string {
+func (e *binaryExpr) String() string {
 	return fmt.Sprintf("%s %s %s", e.LHS.String(), e.Op, e.RHS.String())
 }
 
-func (e *BinaryExpr) Type() string {
+func (e *binaryExpr) Type() string {
 	return "binary expression"
 }
 
-type Ident struct {
+type identifier struct {
 	Val string
 }
 
-func (v *Ident) String() string {
+func (v *identifier) String() string {
 	return v.Val
 }
 
-func (v *Ident) Type() string {
+func (v *identifier) Type() string {
 	return "variable"
 }
 
-type NumberLiteral struct {
+type numberLiteral struct {
 	Val float64
 }
 
-func (l *NumberLiteral) String() string {
+func (l *numberLiteral) String() string {
 	return strconv.FormatFloat(l.Val, 'f', 3, 64)
 }
 
-func (l *NumberLiteral) Type() string {
+func (l *numberLiteral) Type() string {
 	return "number"
 }
 
-type StringLiteral struct {
-	Val string
-}
-
-func (l *StringLiteral) String() string {
+func (l *numberLiteral) Value() interface{} {
 	return l.Val
 }
 
-func (l *StringLiteral) Type() string {
+type stringLiteral struct {
+	Val string
+}
+
+func (l *stringLiteral) String() string {
+	return l.Val
+}
+
+func (l *stringLiteral) Type() string {
 	return "string"
 }
 
-type BoolLiteral struct {
+func (l *stringLiteral) Value() interface{} {
+	return l.Val
+}
+
+type boolLiteral struct {
 	Val bool
 }
 
-func (l *BoolLiteral) String() string {
+func (l *boolLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
-func (l *BoolLiteral) Type() string {
+func (l *boolLiteral) Type() string {
 	return "bool"
 }
 
-type TimeLiteral struct {
+func (l *boolLiteral) Value() interface{} {
+	return l.Val
+}
+
+type timeLiteral struct {
 	Val time.Time
 }
 
-func (l *TimeLiteral) String() string {
+func (l *timeLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
-func (l *TimeLiteral) Type() string {
+func (l *timeLiteral) Type() string {
 	return "time"
 }
 
-type NumberSliceLiteral struct {
+func (l *timeLiteral) Value() interface{} {
+	return l.Val
+}
+
+type numberSliceLiteral struct {
 	Val []float64
 }
 
-func (l *NumberSliceLiteral) String() string {
+func (l *numberSliceLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
-func (l *NumberSliceLiteral) Type() string {
+func (l *numberSliceLiteral) Type() string {
 	return "number slice"
 }
 
-type StringSliceLiteral struct {
+func (l *numberSliceLiteral) Value() interface{} {
+	return l.Val
+}
+
+type stringSliceLiteral struct {
 	Val []string
 }
 
-func (l *StringSliceLiteral) String() string {
+func (l *stringSliceLiteral) String() string {
 	return fmt.Sprintf("%v", l.Val)
 }
 
-func (l *StringSliceLiteral) Type() string {
+func (l *stringSliceLiteral) Type() string {
 	return "string slice"
 }
 
-type DurationLiteral struct {
+func (l *stringSliceLiteral) Value() interface{} {
+	return l.Val
+}
+
+type durationLiteral struct {
 	Val time.Duration
 }
 
-func (l *DurationLiteral) String() string {
+func (l *durationLiteral) String() string {
 	return l.Val.String()
 }
 
-func (l *DurationLiteral) Type() string {
+func (l *durationLiteral) Type() string {
 	return "duration"
+}
+
+func (l *durationLiteral) Value() interface{} {
+	return l.Val
+}
+
+type Function func(args ...interface{}) (interface{}, error)
+
+type functionExpression struct {
+	Name      string
+	Arguments []Expr
+}
+
+func (l *functionExpression) String() string {
+	return l.Name
+}
+
+func (l *functionExpression) Type() string {
+	return "function"
 }
 
 type WalkFunc func(expr Expr, err error) error
@@ -155,7 +202,7 @@ func walk(expr Expr, fn WalkFunc) error {
 	}
 
 	switch e := expr.(type) {
-	case *BinaryExpr:
+	case *binaryExpr:
 		err = walk(e.LHS, fn)
 		if err != nil {
 			return err
@@ -165,7 +212,7 @@ func walk(expr Expr, fn WalkFunc) error {
 		if err != nil {
 			return err
 		}
-	case *ParentExpr:
+	case *parentExpr:
 		err = walk(e.Expr, fn)
 		if err != nil {
 			return err
