@@ -12,4 +12,9 @@ const (
 	GT  Op = ">"
 	GTE Op = ">="
 	IN  Op = "in"
+	ADD Op = "+"
+	SUB Op = "-"
+	MUL Op = "*"
+	DIV Op = "/"
+	MOD Op = "%"
 )
