@@ -23,29 +23,35 @@ type RulesListener interface {
 	// EnterValueList is called when entering the valueList production.
 	EnterValueList(c *ValueListContext)
 
+	// EnterMultiplicativeExpr is called when entering the MultiplicativeExpr production.
+	EnterMultiplicativeExpr(c *MultiplicativeExprContext)
+
 	// EnterIdent is called when entering the Ident production.
 	EnterIdent(c *IdentContext)
 
-	// EnterBoolLit is called when entering the BoolLit production.
-	EnterBoolLit(c *BoolLitContext)
+	// EnterAdditiveExpr is called when entering the AdditiveExpr production.
+	EnterAdditiveExpr(c *AdditiveExprContext)
 
 	// EnterNumberLit is called when entering the NumberLit production.
 	EnterNumberLit(c *NumberLitContext)
 
-	// EnterStringLit is called when entering the StringLit production.
-	EnterStringLit(c *StringLitContext)
+	// EnterInCond is called when entering the InCond production.
+	EnterInCond(c *InCondContext)
 
 	// EnterDurationLit is called when entering the DurationLit production.
 	EnterDurationLit(c *DurationLitContext)
 
+	// EnterParentExpr is called when entering the ParentExpr production.
+	EnterParentExpr(c *ParentExprContext)
+
 	// EnterFuncExpr is called when entering the FuncExpr production.
 	EnterFuncExpr(c *FuncExprContext)
 
-	// EnterInCond is called when entering the InCond production.
-	EnterInCond(c *InCondContext)
+	// EnterBoolLit is called when entering the BoolLit production.
+	EnterBoolLit(c *BoolLitContext)
 
-	// EnterParentExpr is called when entering the ParentExpr production.
-	EnterParentExpr(c *ParentExprContext)
+	// EnterStringLit is called when entering the StringLit production.
+	EnterStringLit(c *StringLitContext)
 
 	// EnterEqualityExpr is called when entering the EqualityExpr production.
 	EnterEqualityExpr(c *EqualityExprContext)
@@ -77,29 +83,35 @@ type RulesListener interface {
 	// ExitValueList is called when exiting the valueList production.
 	ExitValueList(c *ValueListContext)
 
+	// ExitMultiplicativeExpr is called when exiting the MultiplicativeExpr production.
+	ExitMultiplicativeExpr(c *MultiplicativeExprContext)
+
 	// ExitIdent is called when exiting the Ident production.
 	ExitIdent(c *IdentContext)
 
-	// ExitBoolLit is called when exiting the BoolLit production.
-	ExitBoolLit(c *BoolLitContext)
+	// ExitAdditiveExpr is called when exiting the AdditiveExpr production.
+	ExitAdditiveExpr(c *AdditiveExprContext)
 
 	// ExitNumberLit is called when exiting the NumberLit production.
 	ExitNumberLit(c *NumberLitContext)
 
-	// ExitStringLit is called when exiting the StringLit production.
-	ExitStringLit(c *StringLitContext)
+	// ExitInCond is called when exiting the InCond production.
+	ExitInCond(c *InCondContext)
 
 	// ExitDurationLit is called when exiting the DurationLit production.
 	ExitDurationLit(c *DurationLitContext)
 
+	// ExitParentExpr is called when exiting the ParentExpr production.
+	ExitParentExpr(c *ParentExprContext)
+
 	// ExitFuncExpr is called when exiting the FuncExpr production.
 	ExitFuncExpr(c *FuncExprContext)
 
-	// ExitInCond is called when exiting the InCond production.
-	ExitInCond(c *InCondContext)
+	// ExitBoolLit is called when exiting the BoolLit production.
+	ExitBoolLit(c *BoolLitContext)
 
-	// ExitParentExpr is called when exiting the ParentExpr production.
-	ExitParentExpr(c *ParentExprContext)
+	// ExitStringLit is called when exiting the StringLit production.
+	ExitStringLit(c *StringLitContext)
 
 	// ExitEqualityExpr is called when exiting the EqualityExpr production.
 	ExitEqualityExpr(c *EqualityExprContext)
