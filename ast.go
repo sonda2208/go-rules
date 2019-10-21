@@ -13,6 +13,7 @@ type Expr interface {
 }
 
 type Literal interface {
+	Expr
 	Value() interface{}
 }
 

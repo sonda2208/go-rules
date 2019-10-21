@@ -10,14 +10,16 @@ stringList: StringLiteral ( ',' StringLiteral)*;
 valueList: '[' (numberList+ | stringList+) ']';
 
 primaryExpression:
-	Identifier							# Ident
-	| BooleanLiteral					# BoolLit
-	| NumberLiteral						# NumberLit
-	| StringLiteral						# StringLit
-	| DurationLiteral					# DurationLit
-	| Identifier argumentExpressionList	# FuncExpr
-	| Identifier IN valueList			# InCond
-	| LPARENT expression RPARENT		# ParentExpr;
+	Identifier														# Ident
+	| BooleanLiteral												# BoolLit
+	| NumberLiteral													# NumberLit
+	| StringLiteral													# StringLit
+	| DurationLiteral												# DurationLit
+	| Identifier IN valueList										# InCond
+	| Identifier argumentExpressionList								# FuncExpr
+	| LPARENT expression RPARENT									# ParentExpr
+	| primaryExpression op = (MUL | DIV | MOD) primaryExpression	# MultiplicativeExpr
+	| primaryExpression op = (ADD | SUB) primaryExpression			# AdditiveExpr;
 
 booleanExpression:
 	primaryExpression													# PrimaryExpr
@@ -37,6 +39,11 @@ LTE: '<=';
 GT: '>';
 GTE: '>=';
 IN: 'in';
+ADD: '+';
+SUB: '-';
+MUL: '*';
+DIV: '/';
+MOD: '%';
 
 LPARENT: '(';
 RPARENT: ')';

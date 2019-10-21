@@ -3,6 +3,7 @@ package rules
 import (
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"time"
 )
@@ -25,7 +26,7 @@ func Evaluate(expr Expr, params map[string]interface{}, funcs map[string]Functio
 	return l.Val, nil
 }
 
-func evaluate(expr Expr, params map[string]interface{}, funcs map[string]Function) (Expr, error) {
+func evaluate(expr Expr, params map[string]interface{}, funcs map[string]Function) (Literal, error) {
 	switch e := expr.(type) {
 	case *parentExpr:
 		return evaluate(e.Expr, params, funcs)
@@ -79,10 +80,10 @@ func evaluate(expr Expr, params map[string]interface{}, funcs map[string]Functio
 		return toLiteral(fnRes)
 	}
 
-	return expr, nil
+	return expr.(Literal), nil
 }
 
-func compute(op Op, lhs, rhs Expr) (*boolLiteral, error) {
+func compute(op Op, lhs, rhs Expr) (Literal, error) {
 	switch op {
 	case AND:
 		return computeAND(lhs, rhs)
@@ -102,12 +103,22 @@ func compute(op Op, lhs, rhs Expr) (*boolLiteral, error) {
 		return computeGTE(lhs, rhs)
 	case IN:
 		return computeIN(lhs, rhs)
+	case ADD:
+		return computeADD(lhs, rhs)
+	case SUB:
+		return computeSUB(lhs, rhs)
+	case MUL:
+		return computeMUL(lhs, rhs)
+	case DIV:
+		return computeDIV(lhs, rhs)
+	case MOD:
+		return computeMOD(lhs, rhs)
 	}
 
 	return nil, errors.New("invalid operator")
 }
 
-func computeOR(lhs, rhs Expr) (*boolLiteral, error) {
+func computeOR(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *boolLiteral:
 		r, ok := rhs.(*boolLiteral)
@@ -119,7 +130,7 @@ func computeOR(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, errors.New("invalid operator")
 }
 
-func computeAND(lhs, rhs Expr) (*boolLiteral, error) {
+func computeAND(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *boolLiteral:
 		r, ok := rhs.(*boolLiteral)
@@ -131,7 +142,7 @@ func computeAND(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, errors.New("invalid operator")
 }
 
-func computeEQ(lhs, rhs Expr) (*boolLiteral, error) {
+func computeEQ(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -183,7 +194,7 @@ func computeEQ(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeNEQ(lhs, rhs Expr) (*boolLiteral, error) {
+func computeNEQ(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -235,7 +246,7 @@ func computeNEQ(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeLT(lhs, rhs Expr) (*boolLiteral, error) {
+func computeLT(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -282,7 +293,7 @@ func computeLT(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeLTE(lhs, rhs Expr) (*boolLiteral, error) {
+func computeLTE(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -329,7 +340,7 @@ func computeLTE(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeGT(lhs, rhs Expr) (*boolLiteral, error) {
+func computeGT(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -376,7 +387,7 @@ func computeGT(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeGTE(lhs, rhs Expr) (*boolLiteral, error) {
+func computeGTE(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberLiteral)
@@ -423,7 +434,7 @@ func computeGTE(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func computeIN(lhs, rhs Expr) (*boolLiteral, error) {
+func computeIN(lhs, rhs Expr) (Literal, error) {
 	switch l := lhs.(type) {
 	case *numberLiteral:
 		r, ok := rhs.(*numberSliceLiteral)
@@ -456,7 +467,87 @@ func computeIN(lhs, rhs Expr) (*boolLiteral, error) {
 	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
 }
 
-func toLiteral(i interface{}) (Expr, error) {
+func computeADD(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			return &numberLiteral{Val: l.Val + r.Val}, nil
+		}
+	case *timeLiteral:
+		r, ok := rhs.(*durationLiteral)
+		if ok {
+			return &timeLiteral{Val: l.Val.Add(r.Val)}, nil
+		}
+	case *durationLiteral:
+		r, ok := rhs.(*durationLiteral)
+		if ok {
+			return &durationLiteral{Val: l.Val + r.Val}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeSUB(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			return &numberLiteral{Val: l.Val - r.Val}, nil
+		}
+	case *timeLiteral:
+		r, ok := rhs.(*durationLiteral)
+		if ok {
+			return &timeLiteral{Val: l.Val.Add(-1 * r.Val)}, nil
+		}
+	case *durationLiteral:
+		r, ok := rhs.(*durationLiteral)
+		if ok {
+			return &durationLiteral{Val: l.Val - r.Val}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeMUL(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			return &numberLiteral{Val: l.Val * r.Val}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeDIV(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			return &numberLiteral{Val: l.Val / r.Val}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeMOD(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			return &numberLiteral{Val: math.Mod(l.Val, r.Val)}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func toLiteral(i interface{}) (Literal, error) {
 	varType := reflect.TypeOf(i)
 	if varType == nil {
 		return nil, errors.New("type not supported")

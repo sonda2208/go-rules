@@ -68,8 +68,30 @@ func (l *listener) ExitStringList(c *parser.StringListContext) {
 	l.stack.Push(strings)
 }
 
+func (l *listener) ExitMultiplicativeExpr(c *parser.MultiplicativeExprContext) {
+	rhs := l.stack.Pop()
+	lhs := l.stack.Pop()
+
+	l.stack.Push(&binaryExpr{
+		Op:  Op(c.GetOp().GetText()),
+		LHS: lhs,
+		RHS: rhs,
+	})
+}
+
 func (l *listener) ExitIdent(c *parser.IdentContext) {
 	l.stack.Push(&identifier{Val: c.GetText()})
+}
+
+func (l *listener) ExitAdditiveExpr(c *parser.AdditiveExprContext) {
+	rhs := l.stack.Pop()
+	lhs := l.stack.Pop()
+
+	l.stack.Push(&binaryExpr{
+		Op:  Op(c.GetOp().GetText()),
+		LHS: lhs,
+		RHS: rhs,
+	})
 }
 
 func (l *listener) ExitBoolLit(c *parser.BoolLitContext) {
@@ -99,7 +121,7 @@ func (l *listener) ExitStringLit(c *parser.StringLitContext) {
 	l.stack.Push(expr)
 }
 
-func (l *listener) EnterDurationLit(c *parser.DurationLitContext) {
+func (l *listener) ExitDurationLit(c *parser.DurationLitContext) {
 	val, _ := time.ParseDuration(c.GetText())
 	l.stack.Push(&durationLiteral{val})
 }
