@@ -2625,6 +2625,989 @@ func TestEvaluate(t *testing.T) {
 		runTestCase(testcases)
 	})
 
+	t.Run("ADD operator", func(t *testing.T) {
+		testcases := []TestCase{
+			{
+				`a + 1 > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`2 < a + 1`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`a + b + c > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1,
+							"c": 1,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 1,
+							"c": 1,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a + 2h > b`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime(),
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime().Add(2 * time.Hour),
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1 * time.Hour,
+							"b": 1 * time.Hour,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": "?",
+						},
+						false,
+						true,
+					},
+				},
+				nil,
+			},
+		}
+		runTestCase(testcases)
+	})
+
+	t.Run("SUB operator", func(t *testing.T) {
+		testcases := []TestCase{
+			{
+				`a - 1 > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 5,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`2 < a - 1`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 4,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`a - b - c > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 10,
+							"b": 1,
+							"c": 1,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1,
+							"c": 1,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a - 2h > b`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": defaultTime().Add(3 * time.Hour),
+							"b": defaultTime(),
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime(),
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 4 * time.Hour,
+							"b": 1 * time.Hour,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": "?",
+						},
+						false,
+						true,
+					},
+				},
+				nil,
+			},
+		}
+		runTestCase(testcases)
+	})
+
+	t.Run("MUL operator", func(t *testing.T) {
+		testcases := []TestCase{
+			{
+				`a * 2 > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`2 < a * 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`a + b * c < 110`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 10,
+							"c": 10,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 110,
+							"b": 0,
+							"c": 1,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`(a + b) * c == 110`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 10,
+							"c": 10,
+						},
+						true,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`(a * (b - c)) * d == 90`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 10,
+							"c": 1,
+							"d": 10,
+						},
+						true,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a * 2h > b`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime().Add(2 * time.Hour),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1 * time.Hour,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": "?",
+						},
+						false,
+						true,
+					},
+				},
+				nil,
+			},
+		}
+		runTestCase(testcases)
+	})
+
+	t.Run("DIV operator", func(t *testing.T) {
+		testcases := []TestCase{
+			{
+				`a / 2 > 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 7,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`2 < a / 2`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 5,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`a + b / c >= 6`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 10,
+							"c": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 0,
+							"c": 1,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a / b == 0`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 10,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 0,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 0,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a / 2h > b`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime().Add(2 * time.Hour),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1 * time.Hour,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": "?",
+						},
+						false,
+						true,
+					},
+				},
+				nil,
+			},
+		}
+		runTestCase(testcases)
+	})
+
+	t.Run("MOD operator", func(t *testing.T) {
+		testcases := []TestCase{
+			{
+				`a % 2 == 1`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 7,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 4,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+			{
+				`a + b % c > 0`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 10,
+							"c": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 4,
+							"c": 2,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a % b == 0`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 2,
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 2,
+							"b": 0,
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 0,
+							"b": 0,
+						},
+						false,
+						false,
+					},
+				},
+				nil,
+			},
+			{
+				`a % 2h > b`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": defaultTime().Add(2 * time.Hour),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1 * time.Hour,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+							"b": 1 * time.Hour,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+							"b": "?",
+						},
+						false,
+						true,
+					},
+				},
+				nil,
+			},
+		}
+		runTestCase(testcases)
+	})
+
 	t.Run("Parentheses", func(t *testing.T) {
 		testcases := []TestCase{
 			{
@@ -2811,6 +3794,39 @@ func TestEvaluate(t *testing.T) {
 						nil,
 						false,
 						true,
+					},
+				},
+				map[string]rules.Function{
+					"sum": func(args ...interface{}) (interface{}, error) {
+						if len(args) != 2 {
+							return nil, errors.New("invalid arguments")
+						}
+
+						a, ok := args[0].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						b, ok := args[1].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						return a + b, nil
+					},
+				},
+			},
+			{
+				`10 * (sum(a, b) + c) == 120`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": 1,
+							"b": 1,
+							"c": 10,
+						},
+						true,
+						false,
 					},
 				},
 				map[string]rules.Function{
