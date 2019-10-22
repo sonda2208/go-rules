@@ -134,7 +134,7 @@ func (l *listener) ExitFuncExpr(c *parser.FuncExprContext) {
 		Arguments: make([]Expr, numOfArgs),
 	}
 
-	for i := 0; i < numOfArgs; i++ {
+	for i := numOfArgs - 1; i >= 0; i-- {
 		funcExpr.Arguments[i] = l.stack.Pop()
 	}
 
