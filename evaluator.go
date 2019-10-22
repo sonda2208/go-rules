@@ -172,7 +172,7 @@ func computeEQ(lhs, rhs Expr) (Literal, error) {
 				return nil, err
 			}
 
-			return &boolLiteral{Val: (l.Val == dt)}, nil
+			return &boolLiteral{Val: l.Val.Equal(dt)}, nil
 		}
 	case *durationLiteral:
 		strLit, ok := rhs.(*stringLiteral)
@@ -224,7 +224,7 @@ func computeNEQ(lhs, rhs Expr) (Literal, error) {
 				return nil, err
 			}
 
-			return &boolLiteral{Val: (l.Val != dt)}, nil
+			return &boolLiteral{Val: !l.Val.Equal(dt)}, nil
 		}
 	case *durationLiteral:
 		strLit, ok := rhs.(*stringLiteral)
@@ -308,7 +308,7 @@ func computeLTE(lhs, rhs Expr) (Literal, error) {
 	case *timeLiteral:
 		tr, ok := rhs.(*timeLiteral)
 		if ok {
-			return &boolLiteral{Val: l.Val.Before(tr.Val) || l.Val == tr.Val}, nil
+			return &boolLiteral{Val: !l.Val.After(tr.Val)}, nil
 		}
 
 		sr, ok := rhs.(*stringLiteral)
@@ -318,7 +318,7 @@ func computeLTE(lhs, rhs Expr) (Literal, error) {
 				return nil, err
 			}
 
-			return &boolLiteral{Val: l.Val.Before(dt) || l.Val == dt}, nil
+			return &boolLiteral{Val: !l.Val.After(dt)}, nil
 		}
 	case *durationLiteral:
 		strLit, ok := rhs.(*stringLiteral)
@@ -402,7 +402,7 @@ func computeGTE(lhs, rhs Expr) (Literal, error) {
 	case *timeLiteral:
 		tr, ok := rhs.(*timeLiteral)
 		if ok {
-			return &boolLiteral{Val: l.Val.After(tr.Val) || l.Val == tr.Val}, nil
+			return &boolLiteral{Val: !l.Val.Before(tr.Val)}, nil
 		}
 
 		sr, ok := rhs.(*stringLiteral)
@@ -412,7 +412,7 @@ func computeGTE(lhs, rhs Expr) (Literal, error) {
 				return nil, err
 			}
 
-			return &boolLiteral{Val: l.Val.After(dt) || l.Val == dt}, nil
+			return &boolLiteral{Val: !l.Val.Before(dt)}, nil
 		}
 	case *durationLiteral:
 		strLit, ok := rhs.(*stringLiteral)

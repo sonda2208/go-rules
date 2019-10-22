@@ -61,6 +61,24 @@ func TestEvaluate(t *testing.T) {
 		}
 	}
 
+	runTestCaseJSON := func(testcases []TestCase) {
+		for _, tc := range testcases {
+			expr, err := rules.ParseFromJSON([]byte(tc.rules))
+			require.NoError(t, err)
+			require.NotNil(t, expr)
+
+			for i, e := range tc.evaluations {
+				res, err := rules.Evaluate(expr, e.params, tc.funcs)
+				if e.isError {
+					assert.Error(t, err)
+				} else {
+					require.NoError(t, err, fmt.Sprintf("%v %d:%v", tc.rules, i, e.params))
+					assert.Equal(t, e.expected, res, fmt.Sprintf("%v %d:%v", tc.rules, i, e.params))
+				}
+			}
+		}
+	}
+
 	t.Run("General", func(t *testing.T) {
 		t.Run("Nil expression", func(t *testing.T) {
 			_, err := rules.Evaluate(nil, nil, nil)
@@ -3849,8 +3867,45 @@ func TestEvaluate(t *testing.T) {
 					},
 				},
 			},
+			{
+				fmt.Sprintf(`time() == "%s"`, defaultTime().Format(time.RFC3339)),
+				[]Evaluation{
+					{
+						map[string]interface{}{},
+						true,
+						false,
+					},
+				},
+				map[string]rules.Function{
+					"time": func(args ...interface{}) (interface{}, error) {
+						return defaultTime(), nil
+					},
+				},
+			},
 		}
 		runTestCase(testcases)
+	})
+
+	t.Run("Custom function (JSON)", func(t *testing.T) {
+		now := time.Now()
+		testcases := []TestCase{
+			{
+				fmt.Sprintf(`{ "var": "now()", "op": "==", "val": "%v" }`, now.Format(time.RFC3339)),
+				[]Evaluation{
+					{
+						map[string]interface{}{},
+						true,
+						false,
+					},
+				},
+				map[string]rules.Function{
+					"now": func(args ...interface{}) (interface{}, error) {
+						return now.Truncate(1 * time.Second), nil
+					},
+				},
+			},
+		}
+		runTestCaseJSON(testcases)
 	})
 }
 
