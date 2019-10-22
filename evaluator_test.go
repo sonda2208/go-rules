@@ -3882,6 +3882,82 @@ func TestEvaluate(t *testing.T) {
 					},
 				},
 			},
+			{
+				`fn(1, 2, 3) > 1`,
+				[]Evaluation{
+					{
+						nil,
+						true,
+						false,
+					},
+				},
+				map[string]rules.Function{
+					"fn": func(args ...interface{}) (interface{}, error) {
+						if len(args) != 3 {
+							return nil, errors.New("invalid arguments")
+						}
+
+						a, ok := args[0].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						b, ok := args[1].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						c, ok := args[2].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						if a != 1 || b != 2 || c != 3 {
+							return nil, errors.New("invalid arguments")
+						}
+
+						return 2, nil
+					},
+				},
+			},
+			{
+				`fn(2, 1, 3) > 1`,
+				[]Evaluation{
+					{
+						nil,
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{
+					"fn": func(args ...interface{}) (interface{}, error) {
+						if len(args) != 3 {
+							return nil, errors.New("invalid arguments")
+						}
+
+						a, ok := args[0].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						b, ok := args[1].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						c, ok := args[2].(float64)
+						if !ok {
+							return nil, errors.New("invalid arguments")
+						}
+
+						if a != 1 || b != 2 || c != 3 {
+							return nil, errors.New("invalid arguments")
+						}
+
+						return 2, nil
+					},
+				},
+			},
 		}
 		runTestCase(testcases)
 	})
