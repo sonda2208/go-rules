@@ -17,4 +17,5 @@ const (
 	MUL Op = "*"
 	DIV Op = "/"
 	MOD Op = "%"
+	CONTAINS Op = "contains"
 )

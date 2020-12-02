@@ -15,6 +15,7 @@ primaryExpression:
 	| NumberLiteral													# NumberLit
 	| StringLiteral													# StringLit
 	| DurationLiteral												# DurationLit
+	| Identifier CONTAINS (NumberLiteral | StringLiteral)           # ContainsCond
 	| Identifier IN valueList										# InCond
 	| Identifier argumentExpressionList								# FuncExpr
 	| LPARENT expression RPARENT									# ParentExpr
@@ -44,6 +45,7 @@ SUB: '-';
 MUL: '*';
 DIV: '/';
 MOD: '%';
+CONTAINS: 'contains';
 
 LPARENT: '(';
 RPARENT: ')';

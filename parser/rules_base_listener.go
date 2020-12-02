@@ -1,4 +1,4 @@
-// Code generated from parser/Rules.g4 by ANTLR 4.7.2. DO NOT EDIT.
+// Code generated from Rules.g4 by ANTLR 4.8. DO NOT EDIT.
 
 package parser // Rules
 
@@ -62,6 +62,12 @@ func (s *BaseRulesListener) EnterIdent(ctx *IdentContext) {}
 
 // ExitIdent is called when production Ident is exited.
 func (s *BaseRulesListener) ExitIdent(ctx *IdentContext) {}
+
+// EnterContainsCond is called when production ContainsCond is entered.
+func (s *BaseRulesListener) EnterContainsCond(ctx *ContainsCondContext) {}
+
+// ExitContainsCond is called when production ContainsCond is exited.
+func (s *BaseRulesListener) ExitContainsCond(ctx *ContainsCondContext) {}
 
 // EnterAdditiveExpr is called when production AdditiveExpr is entered.
 func (s *BaseRulesListener) EnterAdditiveExpr(ctx *AdditiveExprContext) {}
