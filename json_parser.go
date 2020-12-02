@@ -50,7 +50,7 @@ func (r jsonRule) IsValid() error {
 	}
 
 	validOp := false
-	ops := []Op{AND, OR, EQ, NEQ, LT, LTE, GT, GTE, IN}
+	ops := []Op{AND, OR, EQ, NEQ, LT, LTE, GT, GTE, IN, CONTAINS}
 	for _, o := range ops {
 		if op == o {
 			validOp = true

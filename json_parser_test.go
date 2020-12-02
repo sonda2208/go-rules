@@ -67,6 +67,14 @@ func TestJSONParser(t *testing.T) {
 			false,
 		},
 		{
+			`{ "var": "a", "op": "contains", "val": 1 }`,
+			false,
+		},
+		{
+			`{ "var": "a", "op": "contains", "val": "abc" }`,
+			false,
+		},
+		{
 			`{ "comparator": "||", "rules": [ { "comparator": "&&", "rules": [ { "var": "a", "op": "==", "val": 1 }, { "var": "b", "op": "==", "val": 2 } ] }, { "comparator": "&&", "rules": [ { "var": "c", "op": "==", "val": 3 }, { "var": "d", "op": "==", "val": 4 } ] } ], "var": "a", }`,
 			true,
 		},
@@ -128,6 +136,10 @@ func TestJSONParser(t *testing.T) {
 		},
 		{
 			`{ "var": "strlen(a", "op": ">", "val": 1 }`,
+			true,
+		},
+		{
+			`{ "var": "a", "op": "contain", "val": "abc" }`,
 			true,
 		},
 	}

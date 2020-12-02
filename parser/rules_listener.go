@@ -1,4 +1,4 @@
-// Code generated from parser/Rules.g4 by ANTLR 4.7.2. DO NOT EDIT.
+// Code generated from Rules.g4 by ANTLR 4.8. DO NOT EDIT.
 
 package parser // Rules
 
@@ -28,6 +28,9 @@ type RulesListener interface {
 
 	// EnterIdent is called when entering the Ident production.
 	EnterIdent(c *IdentContext)
+
+	// EnterContainsCond is called when entering the ContainsCond production.
+	EnterContainsCond(c *ContainsCondContext)
 
 	// EnterAdditiveExpr is called when entering the AdditiveExpr production.
 	EnterAdditiveExpr(c *AdditiveExprContext)
@@ -88,6 +91,9 @@ type RulesListener interface {
 
 	// ExitIdent is called when exiting the Ident production.
 	ExitIdent(c *IdentContext)
+
+	// ExitContainsCond is called when exiting the ContainsCond production.
+	ExitContainsCond(c *ContainsCondContext)
 
 	// ExitAdditiveExpr is called when exiting the AdditiveExpr production.
 	ExitAdditiveExpr(c *AdditiveExprContext)

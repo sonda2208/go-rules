@@ -3983,6 +3983,140 @@ func TestEvaluate(t *testing.T) {
 		}
 		runTestCaseJSON(testcases)
 	})
+
+	t.Run("CONTAINS operator", func(t *testing.T) {
+		testcases := []TestCase{
+			//{
+			//	`a contains 1`,
+			//	[]Evaluation{
+			//		{
+			//			map[string]interface{}{
+			//				"a": []int{
+			//					1,
+			//					2,
+			//					3,
+			//				},
+			//			},
+			//			true,
+			//			false,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": []int{
+			//					2,
+			//					3,
+			//				},
+			//			},
+			//			false,
+			//			false,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": []int{},
+			//			},
+			//			false,
+			//			false,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": 1,
+			//			},
+			//			false,
+			//			true,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": false,
+			//			},
+			//			false,
+			//			true,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": "?",
+			//			},
+			//			false,
+			//			true,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": defaultTime(),
+			//			},
+			//			false,
+			//			true,
+			//		},
+			//		{
+			//			map[string]interface{}{
+			//				"a": getDuration("1s"),
+			//			},
+			//			false,
+			//			true,
+			//		},
+			//	},
+			//	map[string]rules.Function{},
+			//},
+			{
+				`a contains "a"`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": "abc",
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": []string{
+								"a",
+								"b",
+								"c",
+							},
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": []string{},
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 0,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
+		}
+		runTestCase(testcases)
+	})
 }
 
 func TestExamples(t *testing.T) {

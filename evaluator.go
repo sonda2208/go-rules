@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -113,6 +114,8 @@ func compute(op Op, lhs, rhs Expr) (Literal, error) {
 		return computeDIV(lhs, rhs)
 	case MOD:
 		return computeMOD(lhs, rhs)
+	case CONTAINS:
+		return computeCONTAINS(lhs, rhs)
 	}
 
 	return nil, errors.New("invalid operator")
@@ -541,6 +544,44 @@ func computeMOD(lhs, rhs Expr) (Literal, error) {
 		r, ok := rhs.(*numberLiteral)
 		if ok {
 			return &numberLiteral{Val: math.Mod(l.Val, r.Val)}, nil
+		}
+	}
+
+	return nil, fmt.Errorf(`cannot convert "%s" to %s`, rhs.String(), lhs.Type())
+}
+
+func computeCONTAINS(lhs, rhs Expr) (Literal, error) {
+	switch l := lhs.(type) {
+	case *numberSliceLiteral:
+		r, ok := rhs.(*numberLiteral)
+		if ok {
+			res := false
+			for _, v := range l.Val {
+				if v == r.Val {
+					res = true
+					break
+				}
+			}
+
+			return &boolLiteral{Val: res}, nil
+		}
+	case *stringSliceLiteral:
+		r, ok := rhs.(*stringLiteral)
+		if ok {
+			res := false
+			for _, v := range l.Val {
+				if v == r.Val {
+					res = true
+					break
+				}
+			}
+
+			return &boolLiteral{Val: res}, nil
+		}
+	case *stringLiteral:
+		r, ok := rhs.(*stringLiteral)
+		if ok {
+			return &boolLiteral{Val: strings.Contains(l.Val, r.Val)}, nil
 		}
 	}
 

@@ -191,6 +191,23 @@ func (l *listener) ExitLogicalExpr(c *parser.LogicalExprContext) {
 	})
 }
 
+func (l *listener) ExitContainsCond(c *parser.ContainsCondContext) {
+	boolExpr := &binaryExpr{
+		Op:  CONTAINS,
+		LHS: &identifier{c.Identifier().GetText()},
+	}
+
+	if c.StringLiteral() != nil {
+		val := unquote(c.StringLiteral().GetText())
+		boolExpr.RHS = &stringLiteral{val}
+	} else if c.NumberLiteral() != nil {
+		val, _ := strconv.ParseFloat(c.NumberLiteral().GetText(), 64)
+		boolExpr.RHS = &numberLiteral{val}
+	}
+
+	l.stack.Push(boolExpr)
+}
+
 func ParseFromString(src string) (Expr, error) {
 	e := &errorListener{}
 

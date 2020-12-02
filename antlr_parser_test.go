@@ -63,6 +63,14 @@ func TestAntlrParser(t *testing.T) {
 			false,
 		},
 		{
+			`a contains 1`,
+			false,
+		},
+		{
+			`a contains "a"`,
+			false,
+		},
+		{
 			`a = 1`,
 			true,
 		},
@@ -104,6 +112,22 @@ func TestAntlrParser(t *testing.T) {
 		},
 		{
 			`a == ""'`,
+			true,
+		},
+		{
+			`a contains []`,
+			true,
+		},
+		{
+			`a contains [1, 2]`,
+			true,
+		},
+		{
+			`a contains ["a", "b"]`,
+			true,
+		},
+		{
+			`a contains false`,
 			true,
 		},
 	}
