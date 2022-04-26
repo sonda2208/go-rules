@@ -142,6 +142,10 @@ func TestJSONParser(t *testing.T) {
 			`{ "var": "a", "op": "contain", "val": "abc" }`,
 			true,
 		},
+		{
+			`{ "var": "a", "op": "==", "val": "xxx" }`,
+			false,
+		},
 	}
 
 	for _, tc := range testcases {

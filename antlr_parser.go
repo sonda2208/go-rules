@@ -18,7 +18,7 @@ func (s *exprStack) Push(v Expr) {
 }
 
 func (s *exprStack) Pop() Expr {
-	if len(s.stack) == 0 {
+	if s.Len() == 0 {
 		return nil
 	}
 

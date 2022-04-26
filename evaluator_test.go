@@ -3986,75 +3986,75 @@ func TestEvaluate(t *testing.T) {
 
 	t.Run("CONTAINS operator", func(t *testing.T) {
 		testcases := []TestCase{
-			//{
-			//	`a contains 1`,
-			//	[]Evaluation{
-			//		{
-			//			map[string]interface{}{
-			//				"a": []int{
-			//					1,
-			//					2,
-			//					3,
-			//				},
-			//			},
-			//			true,
-			//			false,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": []int{
-			//					2,
-			//					3,
-			//				},
-			//			},
-			//			false,
-			//			false,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": []int{},
-			//			},
-			//			false,
-			//			false,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": 1,
-			//			},
-			//			false,
-			//			true,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": false,
-			//			},
-			//			false,
-			//			true,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": "?",
-			//			},
-			//			false,
-			//			true,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": defaultTime(),
-			//			},
-			//			false,
-			//			true,
-			//		},
-			//		{
-			//			map[string]interface{}{
-			//				"a": getDuration("1s"),
-			//			},
-			//			false,
-			//			true,
-			//		},
-			//	},
-			//	map[string]rules.Function{},
-			//},
+			{
+				`a contains 1`,
+				[]Evaluation{
+					{
+						map[string]interface{}{
+							"a": []int{
+								1,
+								2,
+								3,
+							},
+						},
+						true,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": []int{
+								2,
+								3,
+							},
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": []int{},
+						},
+						false,
+						false,
+					},
+					{
+						map[string]interface{}{
+							"a": 1,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": false,
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": "?",
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": defaultTime(),
+						},
+						false,
+						true,
+					},
+					{
+						map[string]interface{}{
+							"a": getDuration("1s"),
+						},
+						false,
+						true,
+					},
+				},
+				map[string]rules.Function{},
+			},
 			{
 				`a contains "a"`,
 				[]Evaluation{
